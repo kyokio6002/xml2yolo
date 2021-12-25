@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 import os
+from posixpath import basename, sep
 import sys
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement
@@ -63,19 +64,12 @@ class PascalVocReader:
 classes = dict()
 num_classes = 0
 
-try:
-    input = raw_input
-except NameError:
-    pass
-
-
-parentpath = './' #"Directory path with parent dir before xml_dir or img_dir"
-addxmlpath = parentpath + 'traffic_label/201702071403' #"Directory path with XML files"
-addimgpath = parentpath + 'traffic_img/201702071403' #"Directory path with IMG files"
-outputpath = parentpath + 'traffic_format4yolo' #"output folder for yolo format"
-classes_txt = './traffic_classes.txt' #"File containing classes"
-ext = '.png' #"Image file extension [.jpg or .png]"
-
+parentpath = os.getcwd().replace(os.sep, '/')
+addxmlpath = os.path.join(parentpath, "Annotations").replace(os.sep, '/')
+addimgpath = os.path.join(parentpath, "JPEGImages") .replace(os.sep, '/')
+outputpath = os.path.join(parentpath, "YoloDatasets").replace(os.sep, '/')
+classes_txt = os.path.join(parentpath, "name.name").replace(os.sep, '/')
+ext = '.jpg'  # [.jpg or .png]
 
 if os.path.isfile(classes_txt):
     with open(classes_txt, "r") as f:
@@ -102,6 +96,8 @@ for xmlPath in xmlPaths:
             class_idx = classes[class_name]
 
             (height, width, _) = cv2.imread(filename).shape
+            img = os.path.join(outputpath, filename.split('/')[-1]).replace(os.sep, '/')
+            cv2.imwrite(img, cv2.imread(filename))
 
             coord_min = box[0]
             coord_max = box[2]
